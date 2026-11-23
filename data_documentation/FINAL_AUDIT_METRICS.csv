@@ -1,0 +1,9 @@
+metric,result
+MEDT rows,312870
+MEDT distinct MEDT_ID,56939
+PTAL rows,644303
+PTAL normalized distinct PAT_ID+ALG_ID pairs,631054
+VIST rows,917331
+VIST distinct REFR_NO,904981
+SPLY rows,721134
+SPLY distinct MAT_SKU,309299
