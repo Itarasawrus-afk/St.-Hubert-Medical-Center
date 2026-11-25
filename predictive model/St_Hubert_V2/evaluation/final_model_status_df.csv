@@ -1,0 +1,6 @@
+Task,Model,Model Role,Primary Experimental Model,Fitted,Validation Evaluated,Held-Out Test Evaluated,Proposal Targets Achieved,Experimental Threshold,Clinical Deployment Approved,Deployment Status,Research Export Approved,Operational Alerts Approved
+LOS Regression,Linear Regression,COMPARATIVE_MODEL,False,True,True,True,False,,False,NOT_RECOMMENDED,True,False
+LOS Regression,Random Forest Regressor,PRIMARY_EXPERIMENTAL_CANDIDATE,True,True,True,True,False,,False,NOT_RECOMMENDED,True,False
+LOS Regression,XGBoost Regressor,SECONDARY_EXPERIMENTAL_CANDIDATE,False,True,True,True,False,,False,NOT_RECOMMENDED,True,False
+30-Day Subsequent Visit Proxy,Random Forest Classifier,SECONDARY_EXPERIMENTAL_CANDIDATE,False,True,True,True,False,0.095563329714727988,False,NOT_RECOMMENDED,True,False
+30-Day Subsequent Visit Proxy,XGBoost Classifier,PRIMARY_EXPERIMENTAL_CANDIDATE,True,True,True,True,False,0.085371159017086029,False,NOT_RECOMMENDED,True,False

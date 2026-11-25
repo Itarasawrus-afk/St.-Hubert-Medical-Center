@@ -1,0 +1,3 @@
+Model,F1 Above Always-Positive,Precision Above Prevalence,Balanced Accuracy Above Chance,Predicted Positive Rate (%),Records Not Flagged,False Positives,False Negatives,Threshold Role,Clinical Approval
+Random Forest Classifier,True,True,True,99.733231010981385,292,96345,24,EXPERIMENTAL_ONLY,False
+XGBoost Classifier,True,True,True,99.728663048840644,297,96343,27,EXPERIMENTAL_ONLY,False

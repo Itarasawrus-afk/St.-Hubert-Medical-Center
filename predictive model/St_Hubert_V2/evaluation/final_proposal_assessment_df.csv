@@ -1,0 +1,8 @@
+Task,Model,Metric,Test Result,Proposal Boundary,Required Direction,Gap to Boundary,Target Achieved
+LOS Regression,Random Forest Regressor,MAE,49.030185593795991,1,<,48.030185593795991,False
+LOS Regression,XGBoost Regressor,MAE,49.030638082848682,1,<,48.030638082848682,False
+LOS Regression,Linear Regression,MAE,49.816930856808291,1,<,48.816930856808291,False
+30-Day Subsequent Visit Proxy,XGBoost Classifier,ROC-AUC,0.50234825716379639,0.80000000000000004,>,0.29765174283620366,False
+30-Day Subsequent Visit Proxy,XGBoost Classifier,PR-AUC (AP),0.11701462166705418,0.75,>,0.63298537833294577,False
+30-Day Subsequent Visit Proxy,Random Forest Classifier,ROC-AUC,0.50330964756963836,0.80000000000000004,>,0.29669035243036168,False
+30-Day Subsequent Visit Proxy,Random Forest Classifier,PR-AUC (AP),0.11725177232819836,0.75,>,0.63274822767180161,False

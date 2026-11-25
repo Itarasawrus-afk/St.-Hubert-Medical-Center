@@ -1,0 +1,9 @@
+Model,Threshold Type,Threshold,TN,FP,FN,TP,Total Records
+Always Negative,Reference,,96549,0,12696,0,109245
+Always Positive,Reference,,0,96549,0,12696,109245
+Random Forest Classifier,Default,0.5,96549,0,12696,0,109245
+Random Forest Classifier,Proposal,0.65000000000000002,96549,0,12696,0,109245
+Random Forest Classifier,Frozen Experimental,0.095563329714727988,253,96296,31,12665,109245
+XGBoost Classifier,Default,0.5,96549,0,12696,0,109245
+XGBoost Classifier,Proposal,0.65000000000000002,96549,0,12696,0,109245
+XGBoost Classifier,Frozen Experimental,0.085371159017086029,270,96279,39,12657,109245
