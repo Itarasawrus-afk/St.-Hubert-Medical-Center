@@ -1,0 +1,45 @@
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Python environments and caches
+.venv/
+.venv_*/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node.js
+node_modules/
+dist/
+
+# Database exports and backups
+*.sql
+*.sql.gz
+*.dump
+*.bak
+
+# Logs and temporary files
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local archives
+*.zip
+
+# Old source backups
+patients_before_management.py
+visits_backup.py
+
+# Old source backups
+patients_before_management.py
+visits_backup.py

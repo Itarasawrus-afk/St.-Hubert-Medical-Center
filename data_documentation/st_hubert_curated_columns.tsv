@@ -1,0 +1,251 @@
+﻿TABLE_NAME	COLUMN_NAME	COLUMN_TYPE	IS_NULLABLE	COLUMN_KEY
+algy	ALG_ID	varchar(3)	NO	PRI
+algy	ALG_NAME	varchar(100)	YES
+appt	REFR_NO	varchar(20)	NO	PRI
+appt	PAT_ID	varchar(20)	NO	MUL
+appt	APT_TIME	datetime	YES
+appt	CTD_ID	varchar(20)	YES
+appt	DOC_ID	varchar(20)	YES
+appt	ASTAT_CD	int	YES
+appt	ASTAT_DES	varchar(100)	YES
+appt	ATYPE_CD	int	YES
+appt	ATYPE_DES	varchar(100)	YES
+bill	BILL_ID	bigint	NO	PRI
+bill	REFR_NO	varchar(20)	NO
+bill	PAT_ID	varchar(20)	NO	MUL
+bill	BILL_DATE	date	YES
+bill	BILL_AMT	decimal(12,2)	YES
+bill	BSTAT_CD	int	YES
+bill	BSTAT_DES	varchar(100)	YES
+bill	BTYPE_CD	varchar(2)	YES
+diag	DIAG_ID	bigint	NO	PRI
+diag	REFR_NO	varchar(20)	NO
+diag	DIG_TOT	decimal(12,2)	YES
+diag	DIG_EN	datetime	YES
+diag	DIG_SEQ	int	YES
+diag	DIG_CD	varchar(20)	YES
+diag	DIG_DES	varchar(200)	YES
+diag	DSTAT_CD	int	YES
+diag	DSTAT_DES	varchar(100)	YES
+diag	DTYPE_CD	int	YES
+diag	DTYPE_DES	varchar(100)	YES
+diag	ROM_ID	varchar(20)	YES
+dpmt	DEP_ID	varchar(20)	NO	PRI
+dpmt	DEP_NAME	varchar(100)	YES
+dpmt	DEP_DES	varchar(200)	YES
+dpmt	DEP_LOC	varchar(100)	YES
+eqpm	EQP_ID	varchar(20)	NO	PRI
+eqpm	EQP_NAME	varchar(100)	YES
+eqpm	TYPE_CD	int	YES
+eqpm	TYPE_DES	varchar(100)	YES
+eqpm	EQP_CAT__1	varchar(50)	YES
+eqpm	EQP_CAT__2	varchar(50)	YES
+eqpm	EQP_CAT__3	varchar(50)	YES
+eqpm	MODL_NO	varchar(50)	YES
+eqpm	STRG_LOC	varchar(100)	YES
+eqpm	ESTAT_CD	int	YES
+eqpm	ESTAT_DES	varchar(100)	YES
+insr	POL_NO	varchar(30)	NO	PRI
+insr	PAT_ID	varchar(20)	NO	MUL
+insr	COM_NAME	varchar(100)	YES
+insr	ITYPE_CD	int	YES
+insr	ITYPE_DES	varchar(100)	YES
+insr	POL_ST	date	YES
+insr	POL_ED	date	YES
+insr	ISTAT_CD	int	YES
+insr	ISTAT_DES	varchar(100)	YES
+insr	CON_NO	varchar(30)	YES
+invn	INVN_ID	bigint	NO	PRI
+invn	MAT_SKU	varchar(20)	NO
+invn	INGTN_TS	datetime	NO
+invn	OPEN_QTY	decimal(12,2)	YES
+invn	OPEN_STF	varchar(20)	YES
+invn	RCVD_QTY	decimal(12,2)	YES
+invn	RCVD_STF	varchar(20)	YES
+invn	ISSD_QTY	decimal(12,2)	YES
+invn	ISSD_STF	varchar(20)	YES
+invn	CLSD_QTY	decimal(12,2)	YES
+invn	CLSD_STF	varchar(20)	YES
+invn	VRFC_STF	varchar(20)	YES
+material	MATERIAL_ID	bigint	NO	PRI
+material	MATERIAL_TYPE	varchar(20)	NO	MUL
+material	SOURCE_MAT_SKU	varchar(20)	NO
+mdbl	MDBL_ID	bigint	NO	PRI
+mdbl	REFR_NO	varchar(20)	NO
+mdbl	PAT_ID	varchar(20)	NO	MUL
+mdbl	BILL_DATE	date	YES
+mdbl	BILL_AMT	decimal(12,2)	YES
+mdbl	BSTAT_CD	int	YES
+mdbl	BSTAT_DES	varchar(100)	YES
+mdbl	BTYPE_CD	varchar(2)	YES
+mdcn	MED_ID	varchar(20)	NO	PRI
+mdcn	MED_NAME	varchar(100)	YES
+mdcn	TYPE_CD	int	YES
+mdcn	TYPE_DES	varchar(100)	YES
+mdcn	FORM_CD	int	YES
+mdcn	FORM_DES	varchar(100)	YES
+mdcn	STRN_NO	decimal(10,2)	YES
+mdcn	STRN_UN	varchar(10)	YES
+mdcn	STRG_CD	int	YES
+mdcn	STRG_DES	varchar(100)	YES
+mdcn	FMQTY_NO	decimal(10,2)	YES
+mdcn	FMQTY_UN	varchar(10)	YES
+mdcn	MSTAT_CD	int	YES
+mdcn	MSTAT_DES	varchar(100)	YES
+mdcn	EXP_MON	int	YES
+mdcn	UN_P_CS	int	YES
+mdcn	COST_UN	decimal(12,2)	YES
+medt	MEDT_RECORD_ID	bigint	NO	PRI
+medt	MEDT_ID	varchar(20)	NO
+medt	TEAM_NO	int	YES
+medt	STF_ID	varchar(20)	NO
+medt	ROLE_CD	int	YES
+medt	ROLE_DES	varchar(100)	YES
+patn	PAT_ID	varchar(20)	NO	PRI
+patn	F_NAME	varchar(50)	YES
+patn	L_NAME	varchar(50)	YES
+patn	M_NAME	varchar(50)	YES
+patn	GEN_CD	int	YES
+patn	GEN_DES	varchar(50)	YES
+patn	DT_BRT	date	YES
+patn	CON_NO	varchar(30)	YES
+patn	EM_ADD	varchar(150)	YES
+patn	EC_F_NAME	varchar(50)	YES
+patn	EC_L_NAME	varchar(50)	YES
+patn	EC_M_NAME	varchar(50)	YES
+patn	EC_CON_NO	varchar(30)	YES
+patn	B_TYPE	varchar(10)	YES
+patn	MAR_ST	varchar(30)	YES
+patn	NAT_ID_S	varchar(50)	YES
+patn	NAT_ID_T	varchar(50)	YES
+patn	NAT_ID_N	varchar(100)	YES
+patn	NAT_ID_E	date	YES
+phase2h_invn_file_log	source_file	varchar(512)	NO	PRI
+phase2h_invn_file_log	rows_inserted	bigint	NO
+phase2h_invn_file_log	completed_at	datetime	NO
+phase2h_invn_file_manifest	source_file	varchar(512)	NO	PRI
+pmnt	PMNT_ID	bigint	NO	PRI
+pmnt	REFR_NO	varchar(20)	NO
+pmnt	PAT_ID	varchar(20)	NO	MUL
+pmnt	BTYPE_CD	varchar(20)	YES
+pmnt	TOT_PMNT	decimal(12,2)	YES
+pmnt	PMNT_TMS	int	YES
+pmnt	PMNT_NO	int	YES
+pmnt	PMNT_DATE	date	YES
+pmnt	PMNT_AMT	decimal(12,2)	YES
+pmnt	METH_CD	int	YES
+pmnt	METH_DES	varchar(100)	YES
+pmnt	PSTAT_CD	int	YES
+pmnt	PSTAT_DES	varchar(100)	YES
+pmnt	PMNT_IF	varchar(50)	YES
+ptal	PATIENT_ALLERGY_ID	bigint	NO	PRI
+ptal	PAT_ID	varchar(20)	NO	MUL
+ptal	ALG_ID	varchar(3)	NO	MUL
+ptal	SVR_CD	int	YES
+ptal	SVR_DES	varchar(100)	YES
+ptal	RCT_CD	int	YES
+ptal	RCT_DES	varchar(100)	YES
+roms	ROOM_RECORD_ID	bigint	NO	PRI
+roms	ROM_ID	varchar(20)	NO
+roms	DEP_ID	varchar(20)	YES	MUL
+roms	PRPS_CD	int	YES
+roms	PRPS_DES	varchar(100)	YES
+roms	RTYPE_CD	int	YES
+roms	RTYPE_DES	varchar(100)	YES
+roms	CPCT_NO	int	YES
+sply	SPL_ID	varchar(20)	NO	PRI
+sply	MAT_SKU	varchar(20)	NO
+sply	MATERIAL_ID	bigint	NO	MUL
+sply	VEN_ACC	varchar(20)	YES	MUL
+sply	BTCH_NO	varchar(30)	YES
+sply	BTCH_SZ	int	YES
+sply	MFG_DATE	date	YES
+sply	SPL_QTY	decimal(12,2)	YES
+sply	SPL_UOM	varchar(10)	YES
+sply	SPL_UCT	decimal(12,2)	YES
+sply	WHS_LOC	varchar(50)	YES
+sply	PAL_ID	varchar(20)	YES
+sply	RCVD_DATE	date	YES
+sply	RCVD_QTY	decimal(12,2)	YES
+sply	RCVD_STF	varchar(20)	YES
+sply	VRFC_DATE	date	YES
+sply	VRFC_STF	varchar(20)	YES
+stff	STAFF_RECORD_ID	bigint	NO	PRI
+stff	STF_ID	varchar(20)	NO
+stff	F_NAME	varchar(50)	YES
+stff	L_NAME	varchar(50)	YES
+stff	M_NAME	varchar(50)	YES
+stff	GEN_CD	int	YES
+stff	GEN_DES	varchar(20)	YES
+stff	DT_BRT	date	YES
+stff	DEP_ID	varchar(20)	YES	MUL
+stff	ROLE_CD	int	YES
+stff	ROLE_DES	varchar(100)	YES
+stff	CON_NO	varchar(30)	YES
+stff	EM_ADD	varchar(150)	YES
+stff	STAT_CD	int	YES
+stff	STAT_DES	varchar(100)	YES
+stff	HIRE_DATE	date	YES
+stff	ROLE_DATE	date	YES
+stff	SAL_YR	decimal(12,2)	YES
+stff	SAL_MN	decimal(12,2)	YES
+stff	INGST_TMSTMP	datetime	YES
+tmmd	TMMD_ID	bigint	NO	PRI
+tmmd	REFR_NO	varchar(20)	NO
+tmmd	MEDS_TOT	decimal(12,2)	YES
+tmmd	MEDS_SEQ	int	YES
+tmmd	MED_ID	varchar(20)	NO	MUL
+tmmd	QTY_NO	decimal(12,2)	YES
+tmmd	DOS_CD	int	YES
+tmmd	DOS_DES	varchar(100)	YES
+tmmd	FREQ_CD	int	YES
+tmmd	FREQ_DES	varchar(100)	YES
+tmmd	RUTE_CD	int	YES
+tmmd	RUTE_DES	varchar(100)	YES
+tmmd	UNIT_DOS	decimal(12,2)	YES
+trtm	TRTM_ID	bigint	NO	PRI
+trtm	REFR_NO	varchar(20)	NO
+trtm	TRTM_TOT	decimal(12,2)	YES
+trtm	TRTM_EN	datetime	YES
+trtm	TTYPE_CD	int	YES
+trtm	TTYPE_DES	varchar(100)	YES
+trtm	TRTM_CD	varchar(20)	YES
+trtm	TSTAT_CD	int	YES
+trtm	TRTM_DES	varchar(200)	YES
+trtm	TSTAT_DES	varchar(100)	YES
+trtm	TRTM_SEQ	int	YES
+vist	VISIT_ID	bigint	NO	PRI
+vist	REFR_NO	varchar(20)	NO
+vist	PAT_ID	varchar(20)	NO
+vist	MEDT_ID	varchar(20)	YES
+vist	VIS_EN	datetime	YES
+vist	VIS_EX	datetime	YES
+vist	VSTAT_CD	int	YES
+vist	VSTAT_DES	varchar(100)	YES
+vist	VTYPE_CD	int	YES
+vist	VTYPE_DES	varchar(100)	YES
+vist	ROM_ID	varchar(20)	YES
+vndr	VEN_ACC	varchar(20)	NO	PRI
+vndr	VEN_NAME	varchar(100)	YES
+vndr	VEN_TYPE	varchar(50)	YES
+vndr	LCNS_NO	varchar(30)	YES
+vndr	CTRY_NAME	varchar(50)	YES
+vndr	CTRY_CD	varchar(10)	YES
+vndr	CTRY_CON_NO	varchar(30)	YES
+vndr	VSTAT_CD	int	YES
+vndr	VSTAT_DES	varchar(100)	YES
+vndr	INGST_TMSTMP	datetime	YES
+vpmt	VPMT_ID	bigint	NO	PRI
+vpmt	REFR_NO	varchar(20)	YES
+vpmt	SPL_ID	varchar(20)	NO	MUL
+vpmt	SPL_CST	decimal(12,2)	YES
+vpmt	PMNT_TRM	int	YES
+vpmt	TRM_NO	int	YES
+vpmt	VPMT_AMT	decimal(12,2)	YES
+vpmt	PMNT_DATE	date	YES
+vpmt	PMNT_DUE	decimal(21,13)	YES
+vpmt	VPSTATUS_CD	int	YES
+vpmt	VPSTATUS_DES	varchar(100)	YES
+vpmt	VEN_ACC	varchar(20)	YES
+vpmt	ACC_NO	varchar(20)	YES
+vpmt	WRE_NO	varchar(20)	YES

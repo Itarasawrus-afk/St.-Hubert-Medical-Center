@@ -1,0 +1,62 @@
+{
+  "task": "subsequent_visit",
+  "estimator_class": "XGBClassifier",
+  "objective": "binary:logistic",
+  "boosting_rounds": 300,
+  "input_features": [
+    "AGE_AT_VISIT",
+    "GENDER",
+    "VISIT_TYPE",
+    "ADMISSION_MONTH",
+    "ADMISSION_WEEKDAY",
+    "ADMISSION_HOUR",
+    "PRIOR_VISIT_COUNT"
+  ],
+  "transformed_features": [
+    "num__AGE_AT_VISIT",
+    "num__ADMISSION_MONTH",
+    "num__ADMISSION_WEEKDAY",
+    "num__ADMISSION_HOUR",
+    "num__PRIOR_VISIT_COUNT",
+    "cat__GENDER_Female",
+    "cat__GENDER_Male",
+    "cat__GENDER_Other",
+    "cat__VISIT_TYPE_Diagnosis",
+    "cat__VISIT_TYPE_Treatment"
+  ],
+  "transformed_feature_count": 10,
+  "class_order": [
+    0,
+    1
+  ],
+  "best_iteration": null,
+  "best_score": null,
+  "missing_value": "NaN",
+  "original_device": null,
+  "portable_inference_device": "cpu",
+  "original_enable_categorical": true,
+  "preprocessor_file": "subsequent_visit_preprocessor.joblib",
+  "preprocessor_sha256": "44e8405cacede4bc38c142dea8f3c0a727672f2e638c4e1364de12fa6c46e012",
+  "native_model_files": {
+    "json": "subsequent_visit_xgboost.json",
+    "ubj": "subsequent_visit_xgboost.ubj"
+  },
+  "native_model_sha256": {
+    "json": "6cd740bafb6c001046f2486caa5f793df95a4e8338bba0c83d30f0f918065535",
+    "ubj": "fb9f9a96a16868e47f43326253427efac1bcd05264d087fc02a4054c348c481f"
+  },
+  "primary_format": "ubj",
+  "alternative_format": "json",
+  "frozen_experimental_threshold": 0.08537115901708603,
+  "required_versions": {
+    "numpy": "2.4.6",
+    "pandas": "2.2.3",
+    "scikit-learn": "1.6.1",
+    "scipy": "1.16.3",
+    "joblib": "1.6.0",
+    "xgboost": "3.4.1"
+  },
+  "research_only": true,
+  "clinical_deployment_approved": false,
+  "operational_alerts_approved": false
+}

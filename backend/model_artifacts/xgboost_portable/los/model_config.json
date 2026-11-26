@@ -1,0 +1,59 @@
+{
+  "task": "los",
+  "estimator_class": "XGBRegressor",
+  "objective": "reg:squarederror",
+  "boosting_rounds": 300,
+  "input_features": [
+    "AGE_AT_VISIT",
+    "GENDER",
+    "VISIT_TYPE",
+    "ADMISSION_MONTH",
+    "ADMISSION_WEEKDAY",
+    "ADMISSION_HOUR",
+    "PRIOR_VISIT_COUNT"
+  ],
+  "transformed_features": [
+    "num__AGE_AT_VISIT",
+    "num__ADMISSION_MONTH",
+    "num__ADMISSION_WEEKDAY",
+    "num__ADMISSION_HOUR",
+    "num__PRIOR_VISIT_COUNT",
+    "cat__GENDER_Female",
+    "cat__GENDER_Male",
+    "cat__GENDER_Other",
+    "cat__VISIT_TYPE_Diagnosis",
+    "cat__VISIT_TYPE_Treatment"
+  ],
+  "transformed_feature_count": 10,
+  "class_order": null,
+  "best_iteration": null,
+  "best_score": null,
+  "missing_value": "NaN",
+  "original_device": null,
+  "portable_inference_device": "cpu",
+  "original_enable_categorical": true,
+  "preprocessor_file": "los_preprocessor.joblib",
+  "preprocessor_sha256": "587d151c7e612d924e7f3891c1d130d8b1b8d77ab418fce4e8fbe5db23986176",
+  "native_model_files": {
+    "json": "los_xgboost.json",
+    "ubj": "los_xgboost.ubj"
+  },
+  "native_model_sha256": {
+    "json": "6c92bc05659a3dd6cf2116f4c503db979fa064c97fc7bbf04e91c9477dde2006",
+    "ubj": "5f7b2a178d7278a17a967923414ef9d8c17d7bd2778c47ba273ef898cb7b0373"
+  },
+  "primary_format": "ubj",
+  "alternative_format": "json",
+  "frozen_experimental_threshold": null,
+  "required_versions": {
+    "numpy": "2.4.6",
+    "pandas": "2.2.3",
+    "scikit-learn": "1.6.1",
+    "scipy": "1.16.3",
+    "joblib": "1.6.0",
+    "xgboost": "3.4.1"
+  },
+  "research_only": true,
+  "clinical_deployment_approved": false,
+  "operational_alerts_approved": false
+}

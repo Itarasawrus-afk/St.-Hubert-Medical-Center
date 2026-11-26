@@ -1,0 +1,84 @@
+{
+  "project": "St. Hubert Medical Center",
+  "version": "V2",
+  "input_feature_count": 7,
+  "transformed_feature_count": 10,
+  "input_features": [
+    "AGE_AT_VISIT",
+    "GENDER",
+    "VISIT_TYPE",
+    "ADMISSION_MONTH",
+    "ADMISSION_WEEKDAY",
+    "ADMISSION_HOUR",
+    "PRIOR_VISIT_COUNT"
+  ],
+  "numeric_features": [
+    "AGE_AT_VISIT",
+    "ADMISSION_MONTH",
+    "ADMISSION_WEEKDAY",
+    "ADMISSION_HOUR",
+    "PRIOR_VISIT_COUNT"
+  ],
+  "categorical_features": [
+    "GENDER",
+    "VISIT_TYPE"
+  ],
+  "known_categories": {
+    "GENDER": [
+      "Female",
+      "Male",
+      "Other"
+    ],
+    "VISIT_TYPE": [
+      "Diagnosis",
+      "Treatment"
+    ]
+  },
+  "numeric_imputation": "median",
+  "numeric_scaling": "StandardScaler",
+  "categorical_imputation": "most_frequent",
+  "categorical_encoding": "OneHotEncoder",
+  "unknown_category_handling": "ignore",
+  "missing_value_representation": "NaN",
+  "transformed_features_by_task": {
+    "los": [
+      "num__AGE_AT_VISIT",
+      "num__ADMISSION_MONTH",
+      "num__ADMISSION_WEEKDAY",
+      "num__ADMISSION_HOUR",
+      "num__PRIOR_VISIT_COUNT",
+      "cat__GENDER_Female",
+      "cat__GENDER_Male",
+      "cat__GENDER_Other",
+      "cat__VISIT_TYPE_Diagnosis",
+      "cat__VISIT_TYPE_Treatment"
+    ],
+    "subsequent_visit": [
+      "num__AGE_AT_VISIT",
+      "num__ADMISSION_MONTH",
+      "num__ADMISSION_WEEKDAY",
+      "num__ADMISSION_HOUR",
+      "num__PRIOR_VISIT_COUNT",
+      "cat__GENDER_Female",
+      "cat__GENDER_Male",
+      "cat__GENDER_Other",
+      "cat__VISIT_TYPE_Diagnosis",
+      "cat__VISIT_TYPE_Treatment"
+    ]
+  },
+  "excluded_inputs": [
+    "patient identifiers",
+    "target variables",
+    "realized length of stay",
+    "exit status"
+  ],
+  "classification_target": "SUBSEQUENT_VISIT_WITHIN_30D_PROXY",
+  "classification_class_order": [
+    0,
+    1
+  ],
+  "frozen_experimental_threshold": 0.08537115901708603,
+  "research_only": true,
+  "clinical_deployment_approved": false,
+  "operational_alerts_approved": false
+}

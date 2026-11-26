@@ -1,0 +1,284 @@
+name: Deploy paid site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: paid-site-sthubertmc
+  cancel-in-progress: false
+
+jobs:
+  validate-migrations:
+    needs: package
+    if: needs.package.outputs.migrations == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: ci-root-password
+          MYSQL_DATABASE: migration_test
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -pci-root-password"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        with:
+          persist-credentials: false
+      - name: Validate and execute migration pairs on MySQL 8.4
+        shell: bash
+        env:
+          MYSQL_CONTAINER: ${{ job.services.mysql.id }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          root = Path('deploy/migrations')
+          files = sorted(p.name for p in root.iterdir()) if root.exists() else []
+          if not files:
+              raise SystemExit('No migration inputs found for validation job')
+          pattern = re.compile(r'([0-9]{4})_([a-z][a-z0-9_]{0,59})\.(sql|verify\.sql)')
+          pairs = {}
+          for name in files:
+              match = pattern.fullmatch(name)
+              if not match or match.group(1) == '0000':
+                  raise SystemExit(f'Invalid migration filename: {name}')
+              number, _, kind = match.groups()
+              pair = pairs.setdefault(number, set())
+              key = 'verify' if kind == 'verify.sql' else 'up'
+              if key in pair:
+                  raise SystemExit(f'Duplicate migration number: {number}')
+              pair.add(key)
+          if any(pair != {'up', 'verify'} for pair in pairs.values()):
+              raise SystemExit('Every migration requires matching .sql and .verify.sql files')
+          if [int(number) for number in sorted(pairs)] != list(range(1, len(pairs) + 1)):
+              raise SystemExit('Migration numbers must be contiguous from 0001')
+          if len(files) > 100 or sum((root / name).stat().st_size for name in files) > 16 * 1024 * 1024:
+              raise SystemExit('Migration input limits exceeded')
+          for name in files:
+              data = (root / name).read_bytes()
+              if not data.endswith(b'\n') or len(data) > 256 * 1024 or b'\r' in data or b'\x00' in data:
+                  raise SystemExit(f'Migration must be <=256 KiB and use LF: {name}')
+              data.decode('utf-8', errors='strict')
+          PY
+          docker exec -e MYSQL_PWD=ci-root-password "$MYSQL_CONTAINER" mysql -uroot \
+            -e "CREATE USER 'migration_ci'@'localhost' IDENTIFIED BY 'ci-migration-password'; GRANT SELECT, INSERT, CREATE, ALTER, INDEX, REFERENCES, SHOW VIEW, TRIGGER ON \`migration\\_test\`.* TO 'migration_ci'@'localhost';"
+          mysql_ci=(docker exec -i -e MYSQL_PWD=ci-migration-password "$MYSQL_CONTAINER" mysql --binary-mode --local-infile=0 --batch --raw --skip-column-names -umigration_ci migration_test)
+          for file in deploy/migrations/*.sql; do
+            [[ "$file" == *.verify.sql ]] && continue
+            "${mysql_ci[@]}" < "$file"
+            result="$("${mysql_ci[@]}" < "${file%.sql}.verify.sql")"
+            if [[ "$result" != 1 ]]; then echo "Migration verification failed for $file"; exit 1; fi
+          done
+
+  package:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    outputs:
+      deploy: ${{ steps.detect.outputs.deploy }}
+      build: ${{ steps.detect.outputs.build }}
+      migrations: ${{ steps.detect.outputs.migrations }}
+      artifact_key: ${{ steps.package.outputs.artifact_key }}
+      sha256: ${{ steps.package.outputs.sha256 }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        with:
+          persist-credentials: false
+
+      - name: Detect committed site or migration inputs
+        id: detect
+        shell: bash
+        run: |
+          set -euo pipefail
+          site=false
+          build=false
+          migrations=false
+          if git ls-files --error-unmatch deploy/build.sh >/dev/null 2>&1; then
+            site=true
+            build=true
+          elif git ls-files --error-unmatch deploy/site/index.html >/dev/null 2>&1; then
+            site=true
+          fi
+          if git ls-files --error-unmatch ':(glob)deploy/migrations/**' >/dev/null 2>&1; then
+            migrations=true
+          fi
+          printf 'build=%s\nmigrations=%s\n' "$build" "$migrations" >> "$GITHUB_OUTPUT"
+          if [[ "$migrations" == false ]]; then
+            echo 'MySQL migration skipped. No committed migration files.' | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+          if [[ "$site" == true || "$migrations" == true ]]; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+            echo 'Deployment skipped. No committed site or migrations.' | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Run committed static build script
+        if: steps.detect.outputs.build == 'true' && steps.detect.outputs.deploy == 'true'
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID: ''
+          AWS_SECRET_ACCESS_KEY: ''
+          AWS_SESSION_TOKEN: ''
+          AWS_WEB_IDENTITY_TOKEN_FILE: ''
+        run: |
+          set -euo pipefail
+          test -f deploy/build.sh
+          bash deploy/build.sh
+          test -f deploy/site/index.html
+
+      - name: Package bounded static artifact
+        id: package
+        if: steps.detect.outputs.deploy == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "${GITHUB_WORKSPACE}/.github/scripts/package_site.py" \
+            --slug 'sthubertmc' --repository-id '1447901482' \
+            --revision "$GITHUB_SHA" --ref "$GITHUB_REF" \
+            --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --out artifact/site.tar.gz
+          sha="$(sha256sum artifact/site.tar.gz | cut -d ' ' -f 1)"
+          key="paid-sites/sthubertmc/${GITHUB_SHA}/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.tar.gz"
+          echo "sha256=$sha" >> "$GITHUB_OUTPUT"
+          echo "artifact_key=$key" >> "$GITHUB_OUTPUT"
+
+      - name: Pass package to isolated deploy job
+        if: steps.detect.outputs.deploy == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: paid-site-package-${{ github.run_attempt }}
+          path: artifact/site.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+
+  deploy:
+    needs: [package, validate-migrations]
+    if: ${{ !cancelled() && needs.package.result == 'success' && needs.package.outputs.deploy == 'true' && ((needs.package.outputs.migrations == 'true' && needs.validate-migrations.result == 'success') || (needs.package.outputs.migrations == 'false' && needs.validate-migrations.result == 'skipped')) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    steps:
+      - name: Download package from isolated build job
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: paid-site-package-${{ github.run_attempt }}
+          path: artifact
+
+      - name: Validate package digest
+        env:
+          EXPECTED_SHA256: ${{ needs.package.outputs.sha256 }}
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          printf '%s  %s\n' "$EXPECTED_SHA256" artifact/site.tar.gz | sha256sum --check --status
+
+      - name: Configure AWS credentials with OIDC
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: arn:aws:iam::173677044880:role/ust-paid-sthubertmc-github
+          aws-region: us-east-1
+          allowed-account-ids: '173677044880'
+          role-session-name: paid-site-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Create immutable artifact object
+        env:
+          AWS_REGION: us-east-1
+          RELEASE_BUCKET: msi-ust-paid-sites-173677044880-us-east-1
+          ARTIFACT_KEY: ${{ needs.package.outputs.artifact_key }}
+          EXPECTED_SHA256: ${{ needs.package.outputs.sha256 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(sha256sum artifact/site.tar.gz | cut -d ' ' -f 1)"
+          [[ "$actual" == "$EXPECTED_SHA256" ]]
+          digest_b64="$(printf '%s' "$actual" | xxd -r -p | base64 -w0)"
+          aws s3api put-object --region "$AWS_REGION" --if-none-match '*' \
+            --bucket "$RELEASE_BUCKET" --key "$ARTIFACT_KEY" \
+            --body artifact/site.tar.gz --checksum-algorithm SHA256 \
+            --checksum-sha256 "$digest_b64" >/dev/null
+
+      - name: Start deployment via SSM
+        id: ssm
+        env:
+          AWS_REGION: us-east-1
+          INSTANCE_ID: i-068efaae507c5294d
+          DOCUMENT_NAME: UST-Paid-sthubertmc-DeployProduction
+          ARTIFACT_KEY: ${{ needs.package.outputs.artifact_key }}
+          EXPECTED_SHA256: ${{ needs.package.outputs.sha256 }}
+          REVISION: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          head_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq .commit.sha)"
+          if [[ "$head_sha" != "$REVISION" ]]; then
+            echo 'Deployment skipped. The packaged revision is no longer the head of main.' | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          command_id="$(aws ssm send-command --region "$AWS_REGION" \
+            --instance-ids "$INSTANCE_ID" --document-name "$DOCUMENT_NAME" \
+            --parameters "ArtifactKey=$ARTIFACT_KEY,Sha256=$EXPECTED_SHA256,Revision=$REVISION,RunId=$RUN_ID,RunAttempt=$RUN_ATTEMPT" \
+            --timeout-seconds 600 \
+            --query 'Command.CommandId' --output text)"
+          [[ "$command_id" =~ ^[0-9a-f-]{36}$ ]]
+          echo "command_id=$command_id" >> "$GITHUB_OUTPUT"
+          echo "SSM command $command_id submitted." | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Poll SSM command with bounded deadline
+        if: steps.ssm.outputs.command_id != ''
+        env:
+          AWS_REGION: us-east-1
+          INSTANCE_ID: i-068efaae507c5294d
+          COMMAND_ID: ${{ steps.ssm.outputs.command_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          deadline=$((SECONDS + 900))
+          while (( SECONDS < deadline )); do
+            if ! result="$(aws ssm get-command-invocation --region "$AWS_REGION" \
+              --command-id "$COMMAND_ID" --instance-id "$INSTANCE_ID" --output json 2>&1)"; then
+              case "$result" in
+                *InvocationDoesNotExist*|*Throttl*|*ServiceUnavailable*) sleep 10; continue ;;
+                *) echo 'SSM status lookup failed.' | tee -a "$GITHUB_STEP_SUMMARY"; exit 1 ;;
+              esac
+            fi
+            status="$(jq -r '.Status' <<<"$result")"
+            phase="$(jq -r '[.StandardOutputContent // "" | split("\n")[] | select(test("^DEPLOY_STATUS (activated|already-active|stale|migration-only|failed-(preflight|download|validation|health|activation|migrations))$"))] | last // ""' <<<"$result")"
+            migration="$(jq -r '[.StandardOutputContent // "" | split("\n")[] | select(test("^MIGRATION_STATUS (skipped|unchanged|applied)$"))] | last // ""' <<<"$result")"
+            if [[ -n "$migration" ]]; then echo "$migration" | tee -a "$GITHUB_STEP_SUMMARY"; fi
+            case "$status" in
+              Success)
+                case "$phase" in
+                  'DEPLOY_STATUS activated'|'DEPLOY_STATUS already-active'|'DEPLOY_STATUS stale'|'DEPLOY_STATUS migration-only')
+                    echo "$phase" | tee -a "$GITHUB_STEP_SUMMARY"; exit 0 ;;
+                  *) echo 'SSM completed without a verified release status.' | tee -a "$GITHUB_STEP_SUMMARY"; exit 1 ;;
+                esac
+                ;;
+              Failed|Cancelled|TimedOut|Undeliverable|Terminated)
+                echo "SSM deployment ended with status $status. $phase" | tee -a "$GITHUB_STEP_SUMMARY"
+                exit 1
+                ;;
+            esac
+            sleep 10
+          done
+          echo "SSM polling deadline reached. Check command $COMMAND_ID before retrying." | tee -a "$GITHUB_STEP_SUMMARY"
+          exit 1
