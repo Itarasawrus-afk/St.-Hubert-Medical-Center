@@ -48,3 +48,5 @@ backend/project_tree.txt
 git status --short
 # Generated deployment website
 /deploy/site/
+
+/artifact/
