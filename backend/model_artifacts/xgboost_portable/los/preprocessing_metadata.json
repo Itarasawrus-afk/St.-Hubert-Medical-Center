@@ -1,0 +1,112 @@
+{
+  "preprocessor_type": "ColumnTransformer",
+  "input_features": [
+    "AGE_AT_VISIT",
+    "GENDER",
+    "VISIT_TYPE",
+    "ADMISSION_MONTH",
+    "ADMISSION_WEEKDAY",
+    "ADMISSION_HOUR",
+    "PRIOR_VISIT_COUNT"
+  ],
+  "transformed_features": [
+    "num__AGE_AT_VISIT",
+    "num__ADMISSION_MONTH",
+    "num__ADMISSION_WEEKDAY",
+    "num__ADMISSION_HOUR",
+    "num__PRIOR_VISIT_COUNT",
+    "cat__GENDER_Female",
+    "cat__GENDER_Male",
+    "cat__GENDER_Other",
+    "cat__VISIT_TYPE_Diagnosis",
+    "cat__VISIT_TYPE_Treatment"
+  ],
+  "numeric_columns": [
+    "AGE_AT_VISIT",
+    "ADMISSION_MONTH",
+    "ADMISSION_WEEKDAY",
+    "ADMISSION_HOUR",
+    "PRIOR_VISIT_COUNT"
+  ],
+  "categorical_columns": [
+    "GENDER",
+    "VISIT_TYPE"
+  ],
+  "numeric_imputer": {
+    "type": "SimpleImputer",
+    "strategy": "median",
+    "statistics": [
+      39.0,
+      5.0,
+      3.0,
+      11.0,
+      1.0
+    ],
+    "missing_values": {
+      "special_float": "NaN"
+    }
+  },
+  "numeric_scaler": {
+    "type": "StandardScaler",
+    "mean": [
+      39.04482216031982,
+      5.606871537681699,
+      2.9955241224778013,
+      11.496863179003594,
+      1.1099990918509375
+    ],
+    "variance": [
+      503.92636236613686,
+      11.290485680133019,
+      4.004678247894639,
+      11.933424224098687,
+      1.5459744789718175
+    ],
+    "scale": [
+      22.448304220277684,
+      3.36013179505403,
+      2.0011692202046882,
+      3.454478864329421,
+      1.2433722206048428
+    ],
+    "samples_seen": 539559,
+    "with_mean": true,
+    "with_std": true
+  },
+  "categorical_imputer": {
+    "type": "SimpleImputer",
+    "strategy": "most_frequent",
+    "statistics": [
+      "Female",
+      "Treatment"
+    ],
+    "missing_values": {
+      "special_float": "NaN"
+    }
+  },
+  "categorical_encoder": {
+    "type": "OneHotEncoder",
+    "categories": [
+      [
+        "Female",
+        "Male",
+        "Other"
+      ],
+      [
+        "Diagnosis",
+        "Treatment"
+      ]
+    ],
+    "handle_unknown": "ignore",
+    "drop": null,
+    "drop_indices": null,
+    "sparse_output": true,
+    "dtype": "float64"
+  },
+  "column_transformer": {
+    "remainder": "drop",
+    "sparse_threshold": 0.3,
+    "fitted_sparse_output": false,
+    "verbose_feature_names_out": true
+  }
+}

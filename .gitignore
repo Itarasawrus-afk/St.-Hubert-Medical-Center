@@ -1,0 +1,52 @@
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Python environments and caches
+.venv/
+.venv_*/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node.js
+node_modules/
+dist/
+
+# Database exports and backups
+*.sql.gz
+*.dump
+*.bak
+
+# Local database backups
+database/backups/
+database/dumps/
+
+# Logs and temporary files
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local archives
+*.zip
+
+# Generated project structure reports
+repository_structure.txt
+backend/project_tree.txt
+
+# Experimental data modelling scripts
+/data modelling/
+
+git status --short
+# Generated deployment website
+/deploy/site/
+
+/artifact/
