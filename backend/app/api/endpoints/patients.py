@@ -769,8 +769,6 @@ def get_patient_record(patient_id: str):
 # ==================================================
 
 @router.get("/{patient_id}")
-
-@router.get("/{patient_id}")
 def get_patient_summary(patient_id: str):
 
     query = text("""
