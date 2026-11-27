@@ -1,4 +1,3 @@
-
 # Environment variables and secrets
 .env
 .env.*
@@ -36,10 +35,6 @@ Thumbs.db
 # Local archives
 *.zip
 
-# Old source backups
-patients_before_management.py
-visits_backup.py
-
-# Old source backups
+# Historical local source backups (not tracked)
 patients_before_management.py
 visits_backup.py
