@@ -23,6 +23,20 @@ GENDER_MAPPING = {
     2: "Other"
 }
 
+def validate_marital_status_value(value):
+    if value is not None:
+        value = value.strip()
+
+        if value == "":
+            return None
+
+        allowed_values = {"Married", "Unmarried"}
+
+        if value not in allowed_values:
+            raise ValueError("Marital status must be Married or Unmarried.")
+
+    return value
+
 
 class PatientCreate(BaseModel):
     first_name: str = Field(min_length=1, max_length=50)
@@ -48,6 +62,11 @@ class PatientCreate(BaseModel):
     national_id_type: Optional[str] = Field(default=None, max_length=50)
     national_id_number: Optional[str] = Field(default=None, max_length=100)
     national_id_expiry: Optional[date] = None
+
+    @field_validator("marital_status")
+    @classmethod
+    def validate_marital_status(cls, value):
+        return validate_marital_status_value(value)
 
 
 class PatientUpdate(BaseModel):
@@ -84,20 +103,7 @@ class PatientUpdate(BaseModel):
     @field_validator("marital_status")
     @classmethod
     def validate_marital_status(cls, value):
-        if value is not None:
-            value = value.strip()
-
-            if value == "":
-                return None
-
-            allowed_values = {"Married", "Unmarried"}
-
-            if value not in allowed_values:
-                raise ValueError(
-                    "Marital status must be Married or Unmarried."
-                )
-
-        return value
+        return validate_marital_status_value(value)
 
 
 # ==================================================
