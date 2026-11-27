@@ -1,223 +1,112 @@
-﻿# St. Hubert Medical Center â€” Business Intelligence System
+# St. Hubert Medical Center — Business Intelligence System
 
-## Project Overview
+## Overview
 
-The St. Hubert Medical Center Business Intelligence (BI) System is an academic project designed to support hospital performance monitoring, operational analysis, patient-flow assessment, and predictive analytics.
+The St. Hubert Medical Center Business Intelligence (BI) System is an academic application for hospital performance monitoring, operational analysis, patient-flow assessment, and experimental predictive analytics.
 
-The system provides a centralized interface for exploring hospital operational data and selected patient-level information. It also integrates experimental machine learning models for length-of-stay estimation and subsequent-visit risk prediction.
+The frontend is a React application built with Vite. It communicates with the FastAPI backend through REST endpoints. The frontend and backend are separate services and must be configured to use matching API URLs.
 
-This project is intended for academic demonstration and research purposes. Its predictive outputs are not approved for clinical decision-making or operational alerts.
+**Use limitation:** This is an academic/research demonstration. Predictive outputs are not approved for clinical decisions, patient-care workflows, or operational alerts. The subsequent-visit outcome is a proxy target, not confirmed readmission.
 
-## Technology Stack
+## Technology
 
 | Component | Technology |
 |---|---|
 | Frontend | React, Vite, JavaScript, CSS |
-| Backend | Python, FastAPI |
+| Routing | React Router |
+| Charts | Recharts |
+| Icons | Lucide React |
+| Backend API | Python, FastAPI |
 | Database | MySQL |
-| API communication | REST API |
-| Predictive modeling | XGBoost and supporting Python ML libraries |
+| Predictive integration | Portable XGBoost inference service in the backend |
 
-## System Modules
+See `package.json` and `package-lock.json` for the frontend dependency declarations and resolved versions.
 
-### 1. Executive BI Dashboard
-Provides a high-level overview of hospital activity and performance indicators.
+## Application areas
 
-### 2. Patient Flow & Length of Stay
-Provides patient-flow analysis, visit filtering, and length-of-stay summaries.
+The application includes executive dashboard, patient-flow and length-of-stay analysis, patient directory and record views, and a research/demo prediction interface. The backend also exposes billing, inventory, and workforce API groups; the exact operations available in a given revision are documented by the FastAPI OpenAPI schema.
 
-### 3. Clinical Risk & Prediction
-Integrates experimental XGBoost prediction endpoints for:
-- Length-of-stay estimation
-- Subsequent-visit probability estimation
+## Local development
 
-The models are presented for research and demonstration only. Predictions should not be interpreted as clinical recommendations.
+### Prerequisites
 
-### 4. Patient Directory
-Provides searchable and paginated access to patient directory records.
+- Node.js and npm compatible with the checked-in lockfile
+- A running backend API
+- Authorized access to the configured backend database when database-backed views are used
 
-### 5. Patient Record Detail
-Displays selected patient demographic information and visit history, including the available subsequent-visit summary.
+### Install dependencies
 
-## System Architecture
+From the `frontend/` directory:
 
-The application uses a frontend-backend-database architecture:
-
-1. **Frontend:** React provides the user interface and sends requests to the backend API.
-2. **Backend:** FastAPI handles API requests, retrieves data, and invokes the predictive model services.
-3. **Database:** MySQL stores the underlying hospital data accessed by the backend.
-
-The frontend and backend run as separate services during local development.
-
-## Repository Structure
-
-```text
-St.-Hubert-Medical-Center/
-â”œâ”€â”€ .github/
-â”œâ”€â”€ backend/
-â”‚   â”œâ”€â”€ app/
-â”‚   â”‚   â”œâ”€â”€ api/
-â”‚   â”‚   â”œâ”€â”€ database/
-â”‚   â”‚   â”œâ”€â”€ ml/
-â”‚   â”‚   â””â”€â”€ services/
-â”‚   â”œâ”€â”€ model_artifacts/
-â”‚   â”œâ”€â”€ main.py
-â”‚   â””â”€â”€ requirements.txt
-â”œâ”€â”€ frontend/
-â”‚   â”œâ”€â”€ src/
-â”‚   â”œâ”€â”€ public/
-â”‚   â”œâ”€â”€ index.html
-â”‚   â”œâ”€â”€ package.json
-â”‚   â””â”€â”€ vite.config.js
-â”œâ”€â”€ database/
-â”œâ”€â”€ data modelling/
-â””â”€â”€ data_documentation/
+```bash
+npm ci
 ```
 
-*The structure above summarizes the main project areas. Individual files and supporting assets may vary.*
+### Configure the API base URL
 
-## Requirements
-
-- Node.js 20 LTS (recommended)
-- Python environment compatible with the backend dependencies
-- MySQL Server
-- Git
-
-## Local Development Setup
-
-### 1. Database
-
-1. Install and start MySQL.
-2. Configure the database connection using the backend environment variables.
-3. Ensure the required database and views are available.
-4. Do not commit database credentials or patient-level data to the public repository.
-
-Refer to the `database/` and `data_documentation/` directories for the project's database-related materials.
-
-### 2. Backend Setup
-
-Open a terminal in the `backend/` directory.
-
-Create and activate a Python virtual environment, then install the backend dependencies:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
-
-Configure the backend environment variables using the appropriate local configuration. Do not commit the actual `.env` file.
-
-Start the FastAPI development server:
-
-```powershell
-python -m uvicorn main:app --host 127.0.0.1 --port 8000
-```
-
-Backend API:
-`http://127.0.0.1:8000`
-
-Interactive API documentation:
-`http://127.0.0.1:8000/docs`
-
-### 3. Frontend Setup
-
-Open another terminal in the `frontend/` directory.
-
-Install the dependencies:
-
-```powershell
-npm install
-```
-
-Create a local `.env` file containing the frontend API base URL:
+Create a local `.env` file using `.env.example` as a starting point:
 
 ```env
 VITE_API_BASE_URL=http://127.0.0.1:8000/api/v1
 ```
 
-Start the Vite development server:
+The value must point to the FastAPI API base and include the `/api/v1` prefix. Do not commit local environment files or secrets.
 
-```powershell
+### Start the development server
+
+```bash
 npm run dev
 ```
 
-Open the application at:
+Vite normally serves the development application at `http://localhost:5173`.
 
-`http://localhost:5173`
+### Create a production build
 
-If the backend is hosted at a different address, update `VITE_API_BASE_URL` accordingly.
-
-## API Overview
-
-The backend exposes REST endpoints under `/api/v1`.
-
-The implemented endpoint groups include:
-
-| Endpoint | Purpose |
-|---|---|
-| `/overview` | Executive dashboard metrics |
-| `/overview/trends` | Dashboard trends |
-| `/visits` | Visit records and filtering |
-| `/visits/los-summary` | Length-of-stay summaries |
-| `/visits/filters` | Available visit filters |
-| `/visits/patient-flow` | Patient-flow aggregation |
-| `/patients/` | Patient records |
-| `/patients/directory` | Patient directory |
-| `/patients/{patient_id}/record` | Patient record detail |
-| `/models/xgboost/status` | Predictive model availability |
-| `/models/xgboost/los/predict` | Length-of-stay prediction |
-| `/models/xgboost/subsequent-visit/predict` | Subsequent-visit prediction |
-
-Additional billing, inventory, and workforce endpoints are also present in the backend.
-
-For the complete API schema and interactive testing interface, open the FastAPI Swagger documentation at `/docs`.
-
-## Predictive Model Limitations
-
-The integrated predictive models are intended for academic evaluation and demonstration.
-
-Important limitations:
-
-- The models are not approved for clinical deployment.
-- Predictions must not be used as a substitute for professional clinical judgment.
-- The subsequent-visit outcome is a proxy target and should not be described as confirmed readmission.
-- Model performance limitations must be considered when interpreting predictions.
-- The experimental prediction thresholds are not approved for operational alerting.
-
-The model outputs should therefore be interpreted as experimental analytical results, not validated clinical decisions.
-
-## Data and Privacy Considerations
-
-This repository is intended for project development, academic demonstration, and evaluation.
-
-- Do not commit database passwords, API secrets, or other credentials.
-- Do not commit private patient-level datasets or personally identifiable information.
-- Keep local `.env` files and virtual environments out of version control.
-- Use appropriately authorized and protected data when running the application.
-
-## Production Build
-
-To generate the frontend production build:
-
-```powershell
-cd frontend
+```bash
 npm run build
 ```
 
-Vite generates the production files in:
+Vite writes the production output to `frontend/dist/`. The repository's `deploy/build.sh` script runs the locked frontend install and build, then copies the output into `deploy/site/` for the static-site workflow.
 
-```text
-frontend/dist/
-```
+## Backend API
 
-For deployment, the frontend static build and FastAPI backend must be hosted and configured to communicate with one another. The backend must also have access to the required MySQL database and model artifacts.
+The frontend uses the FastAPI service under the `/api/v1` prefix. Configure `VITE_API_BASE_URL` to match the backend environment.
 
-Deployment configuration, environment variables, CORS settings, and database connectivity must be reviewed for the target hosting environment.
+The backend currently registers these API groups:
 
-## Project Purpose
+- `overview`
+- `billing`
+- `visits`
+- `inventory`
+- `workforce`
+- `patients`
+- `models`
 
-The St. Hubert Medical Center BI System demonstrates how business intelligence, hospital operational data, and experimental predictive analytics can be integrated into a unified application to support data exploration and management-oriented analysis.
+For exact endpoint paths, request fields, and response schemas, consult the backend's interactive OpenAPI documentation at `/docs` while the service is running. The backend setup, seven-feature prediction input contract, and model artifact layout are documented in [backend/README.md](../backend/README.md).
 
-**Project classification:** Academic Business Intelligence and Predictive Analytics Demonstration
+## Predictive model limitations
+
+The integrated prediction endpoints are for academic evaluation and demonstration only.
+
+- Predictions are not clinical recommendations.
+- The models are not approved for clinical deployment or operational alerting.
+- The subsequent-visit target is a proxy and must not be described as confirmed readmission.
+- Experimental thresholds must not be used as approved clinical or operational decision thresholds.
+
+## Data protection
+
+- Do not commit database credentials, API secrets, or local `.env` files.
+- Do not commit private patient-level datasets or personally identifiable information.
+- Review generated build output and staged changes before publishing.
+- Use only authorized and appropriately protected data when running the application.
+
+## Deployment boundary
+
+The repository's GitHub Actions workflow deploys the static frontend site. It does **not** deploy the FastAPI backend. The production frontend must be built with the confirmed production `VITE_API_BASE_URL`, and the backend must separately allow the production frontend origin through its CORS configuration.
+
+See the repository [Deployment Overview](../DEPLOYMENT.md) and [Backend Deployment Handoff](../backend/DEPLOYMENT_HANDOFF.md).
+
+## Project classification
+
+**Project type:** Academic Business Intelligence and Predictive Analytics Demonstration  
 **Predictive model status:** Research only; not approved for clinical deployment or operational alerts.
