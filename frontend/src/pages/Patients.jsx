@@ -380,11 +380,8 @@ export default function Patients({ role }) {
                 }
               >
                 <option value="">Not specified</option>
-                <option value="Single">Single</option>
                 <option value="Married">Married</option>
-                <option value="Widowed">Widowed</option>
-                <option value="Divorced">Divorced</option>
-                <option value="Separated">Separated</option>
+                <option value="Unmarried">Unmarried</option>
               </select>
             </label>
 
