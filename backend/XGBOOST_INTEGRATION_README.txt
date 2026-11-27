@@ -1,42 +1,58 @@
-ST. HUBERT BACKEND - PORTABLE XGBOOST INTEGRATION
+ST. HUBERT MEDICAL CENTER — PORTABLE XGBOOST BACKEND INTEGRATION
 
-This is an additive integration package based on the uploaded backend app.zip, main.py, and requirements.txt. Existing API endpoint modules are retained. The only router change registers /models routes.
+For the current implementation and complete setup instructions, see:
+  backend/README.md
+  backend/DEPLOYMENT_HANDOFF.md
 
-IMPORTANT RUNTIME REQUIREMENT
-Use CPython 3.13.17 and a NEW virtual environment. Do not use the existing Python 3.15 or .venv_models environments. The six model dependencies are pinned exactly as verified. Existing backend dependency pins are retained.
+RUNTIME
+Use CPython 3.13.17 and a NEW virtual environment from the backend folder.
+Do not reuse the previously used Python 3.15 or .venv_models environments.
+Do not change pinned dependencies without validating model compatibility.
 
-INSTALLATION (PowerShell, from the backend folder)
+PowerShell setup (from backend):
   py -3.13 --version
   py -3.13 -m venv .venv_bi_xgb
   .\.venv_bi_xgb\Scripts\python.exe -m pip install --upgrade pip
   .\.venv_bi_xgb\Scripts\python.exe -m pip install -r requirements.txt
 
-Keep your existing .env file in this backend folder. Do not upload it or include it in ZIP/Git.
+Keep the actual .env file local. Do not upload it or include it in Git.
 
 RUN
   .\.venv_bi_xgb\Scripts\python.exe -m uvicorn main:app --reload
 
-TEST
-  http://127.0.0.1:8000/models/xgboost/status
+LOCAL DOCUMENTATION
   http://127.0.0.1:8000/docs
 
-POST /api/v1/models/xgboost/los/predict
-POST /api/v1/models/xgboost/subsequent-visit/predict
+MODEL ENDPOINTS
+  GET  /api/v1/models/xgboost/status
+  POST /api/v1/models/xgboost/los/predict
+  POST /api/v1/models/xgboost/subsequent-visit/predict
 
-Both POST routes accept exactly these seven fields:
-AGE_AT_VISIT, GENDER, VISIT_TYPE, ADMISSION_MONTH, ADMISSION_WEEKDAY, ADMISSION_HOUR, PRIOR_VISIT_COUNT. Fields may be null. Do not send patient identifiers, target variables, realized LOS, or exit status.
+Both POST routes use exactly these seven input fields:
+  AGE_AT_VISIT
+  GENDER
+  VISIT_TYPE
+  ADMISSION_MONTH
+  ADMISSION_WEEKDAY
+  ADMISSION_HOUR
+  PRIOR_VISIT_COUNT
 
-Example JSON body:
-{
-  "AGE_AT_VISIT": 45,
-  "GENDER": "Female",
-  "VISIT_TYPE": "Diagnosis",
-  "ADMISSION_MONTH": 6,
-  "ADMISSION_WEEKDAY": 2,
-  "ADMISSION_HOUR": 10,
-  "PRIOR_VISIT_COUNT": 1
-}
+Fields may be null according to the request schema. Additional fields are rejected.
+Do not send patient identifiers, target variables, realized LOS, or exit status.
 
-Research/demo only. These models are not approved for clinical deployment or operational alerts. The subsequent-visit target is a proxy, not confirmed readmission. Do not connect to clinical workflows.
+PORTABLE ARTIFACTS
+The integrated service loads task-specific artifacts from:
+  backend/model_artifacts/xgboost_portable/
 
-If installation fails due to dependency resolution, stop and send the complete output. Do not change dependency pins. Preserve your backend backup.
+The LOS and subsequent_visit task directories contain native XGBoost UBJSON
+models, joblib preprocessing artifacts, configuration, and preprocessing
+metadata. Keep each task's files together. The loader performs integrity,
+dependency, and feature-contract checks.
+
+RESEARCH / DEMONSTRATION ONLY
+These models are not approved for clinical deployment, clinical decisions,
+patient-care workflows, or operational alerts. The subsequent-visit target is
+a proxy, not confirmed readmission.
+
+If installation or model loading fails, preserve the complete error output.
+Do not change dependency pins or replace artifacts as an ad hoc workaround.
