@@ -1,83 +1,48 @@
-# FastAPI Research Integration Guide
+# FastAPI Integration Guide — Research Reference and Current Implementation
 
-## Integration status
+## Purpose and status
 
-Research demonstration only.
+This file preserves the V2 research integration guidance. It is not the authoritative setup guide for the model service currently integrated into the BI backend.
 
-Do not expose these models as clinically validated
-prediction services.
+**For the current application implementation, use [Backend README](../../../backend/README.md) and [Backend Deployment Handoff](../../../backend/DEPLOYMENT_HANDOFF.md).**
 
-## Recommended artifacts
+## Historical V2 research guidance
 
-LOS experimental candidate:
-models/los_random_forest.joblib
+The V2 research workflow documented the following experimental candidate artifacts:
 
-Subsequent visit experimental candidate:
-models/subsequent_visit_xgboost.joblib
+- LOS: Random Forest Regressor candidate, historically referenced as `models/los_random_forest.joblib`.
+- Subsequent visit: XGBoost Classifier candidate, historically referenced as `models/subsequent_visit_xgboost.joblib`.
 
-## Recommended integration sequence
+The guide also recorded candidate probability thresholds for research reproducibility:
 
-1. Create an isolated Python environment.
-2. Install the recorded model dependencies.
-3. Verify the artifact SHA-256 checksums.
-4. Load only trusted serialized pipelines.
-5. Validate the seven original input features.
-6. Run a synthetic-input smoke test.
-7. Verify prediction shapes and finite outputs.
-8. Compare synthetic-input results across environments.
-9. Clearly label all outputs as experimental.
-10. Keep clinical alerts and operational automation disabled.
+- Random Forest Classifier: `0.095563329714727988`
+- XGBoost Classifier: `0.085371159017086029`
 
-## Inference methods
+These values are historical research metadata. They are not approved clinical thresholds, operational alert thresholds, or current backend configuration.
 
-LOS regression:
-pipeline.predict(input_dataframe)
+## Current backend implementation
 
-Subsequent visit probability:
-pipeline.predict_proba(input_dataframe)
+The integrated BI backend is a separate portable inference implementation under:
 
-The positive-class probability corresponds to class 1.
+```text
+backend/model_artifacts/xgboost_portable/
+```
 
-Verify classifier class ordering before selecting
-the probability column.
+It provides two XGBoost inference tasks:
 
-## Experimental thresholds
+- `los`
+- `subsequent_visit`
 
-Random Forest Classifier:
-0.095563329714727988
+The current backend uses native XGBoost UBJSON model files and task-specific joblib preprocessing artifacts, with configuration and preprocessing metadata. It exposes these routes under the `/api/v1` prefix:
 
-XGBoost Classifier:
-0.085371159017086029
+- `GET /api/v1/models/xgboost/status`
+- `POST /api/v1/models/xgboost/los/predict`
+- `POST /api/v1/models/xgboost/subsequent-visit/predict`
 
-These thresholds are retained for research
-reproducibility only.
+The current seven-feature request contract is documented in [Backend README](../../../backend/README.md). The backend integration environment is documented as CPython 3.13.17; this differs from the Python 3.13.18 research environment recorded in the V2 research README.
 
-They must not be treated as approved clinical
-decision thresholds.
+## Interpretation and restrictions
 
-## Suggested demonstration endpoints
+The subsequent-visit target is a proxy outcome, not confirmed readmission. All integrated predictions remain academic/research demonstrations only. Do not use them for clinical decisions, patient-care actions, or operational alerts.
 
-POST /research/predict-los
-POST /research/predict-subsequent-visit
-
-Suggested response metadata:
-
-- dataset_version: V2
-- research_only: true
-- clinical_deployment_approved: false
-- operational_alerts_approved: false
-
-Do not describe the subsequent visit probability as a
-validated probability of unplanned hospital readmission.
-
-## Environment compatibility
-
-The models were verified in their original Linux
-training environment.
-
-Successful loading on a different local operating
-system has not yet been established.
-
-FastAPI and Uvicorn versions are not pinned here
-because this package documents the model environment,
-not a verified API deployment environment.
+The historical research artifacts, candidate thresholds, and suggested `/research/*` endpoint paths above should not be used as instructions for the current backend deployment.
